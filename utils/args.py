@@ -14,9 +14,14 @@ class Args:
         self.parser.add_argument('--abstract', help='Use abstract text', action="store_true")
         self.parser.add_argument('--ner', help='Use NER types from spotlight', action="store_true")
         self.parser.add_argument('--stats', help='Generate stats of types', action="store_true")
+        self.parser.add_argument('--unseen', help='Predictions are over unseen data', action="store_true")
+
+        # path args
+        self.parser.add_argument("--prefix", help="Common prefix of inpunt and output files")
+        self.parser.add_argument("--ibase", help="Path to the input files folder")
+        self.parser.add_argument("--obase", help="Path to the output files folder")
 
         # num args
-
         self.parser.add_argument("--neweight", help="Weight for the NE types, default 1", type=int, default=1)
         self.parser.add_argument("--fstep", help="First step of the pipeline, default 0", type=int, default=0)
         self.parser.add_argument("--lstep", help="Last step of the pipeline, default = 100", type=int, default=100)

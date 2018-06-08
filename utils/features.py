@@ -26,12 +26,10 @@ def vectorize_data(text_list, from_ind, to_ind,  use_tf_idf = True):
         # Representation of the data using TF-IDF
         vectorizer = TfidfVectorizer(tokenizer=custom_tokenizer)
         vectorised_train_data = vectorizer.fit_transform(train_data)
-        return vectorised_train_data
+        return vectorised_train_data, vectorizer
 
     else:
         # TODO:
         logger.warning("TODO: pending count vectorizer")
-
-    logger.info("End of vectorize_data, returning a list of %s entries" % len(return_list))
 
     return []

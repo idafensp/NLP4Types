@@ -1,41 +1,3 @@
-# training phase
-
-# get all entries from a set of classes in dbpedia
-#   get abstract
-#   get URI
-#   get Types
-#   get Text
-#   get Categories
-# save to CSV
-
-
-# load data from CSV
-# for each row
-#   get entities from spotlight [+ Google NER api]
-#       extract types of NE for features
-#
-#   get wikilinks related entities
-#       extract types for features
-#
-#   get wkipedia categories
-#       try to group them
-#
-#   preprocess entity abstracts
-#       html cleanising
-#       stemming and lemma
-#       stopwords
-#
-# get tdfid of all documents/entities
-#   using uni, bi, adn tri-grams
-# generate features for each doc
-# train model
-
-# prediction
-# get all entities without type/infobox
-#   get abstract / comment
-#   get wikilinks
-# save to a CSV file
-
 import logging as logger
 import pickle
 import pandas as pd
@@ -51,6 +13,7 @@ import utils.preprocess as pp
 import utils.classifiers as cls
 import utils.utils as ut
 import utils.args as uarg
+import utils.unseen_data as ud
 
 
 COL_ABSTRACT_NAME = 'abstract'
@@ -92,7 +55,10 @@ def main():
 
     # TODO: add these as CLI parameters
     # Files
-    prefix = "10Kl"
+    prefix = args.prefix
+    input_base = args.ibase
+    output_base = args.obase
+
     types_path = '../../data/' + prefix + '_instance_types_en.ttl'
     abstract_path = '../../data/' + prefix + '_long_abstracts_en.ttl'
     res_path = '../../data/results/' + prefix + '_merged_types_abstract.csv'
@@ -100,9 +66,12 @@ def main():
     pred_res_path = '../../data/results/' + prefix + '_pred_and_labels.csv'
     file_pp_text_list = '../../data/results/' + prefix + '_pp_text_list.p'
     file_vec_data = '../../data/results/' + prefix + '_vec_data.p'
+    file_vectorizer = '../../data/results/' + prefix + '_vectorizer.p'
     file_classifier = '../../data/results/' + prefix + '_classifier.p'
     file_train_index = '../../data/results/' + prefix + '_train_index.p'
     file_args = '../../data/results/' + prefix + '_args.p'
+    file_unseen_df = '../../data/results/' + prefix + '_unseen_df.p'
+    file_unseen_data_vec = '../../data/results/' + prefix + '_unseen_data_vec.p'
 
     # Parameters
     first_step = args.fstep
@@ -116,6 +85,7 @@ def main():
     support = args.support
     train_size = args.tsize
     ne_weight = args.neweight
+    unseen = args.unseen
 
 
 
@@ -156,7 +126,7 @@ def main():
 
         fu.df_to_csv(ne_res_path, df_types_abs)
 
-    if st.isstep(3):  # start feature selection
+    if st.isstep(3):  # start preprocessing text
 
         # load data from disk
         df_pre = fu.csv_to_df(ne_res_path)
@@ -183,10 +153,12 @@ def main():
         logger.info("Training rows [%s-%s], testing rows [%s-%s]" % (0, train_index, train_index, len(pp_text_list)))
 
         # vectorize data
-        vec_data = feat.vectorize_data(pp_text_list, 0, len(pp_text_list))
+        vec_data, vectorizer = feat.vectorize_data(pp_text_list, 0, len(pp_text_list))
 
         # TODO pickle vec_data
         pickle.dump(vec_data, open(file_vec_data, "wb"))
+        # TODO pickle vectorizer
+        pickle.dump(vectorizer, open(file_vectorizer, "wb"))
         # TODO pickle train_index
         pickle.dump(train_index, open(file_train_index, "wb"))
 
@@ -224,17 +196,28 @@ def main():
             # un-pickle vec_data
             vec_data = pickle.load(open(file_vec_data, "rb"))
 
+        if 'classifier' not in locals():
+            # un-pickle classifier
+            classifier = pickle.load(open(file_classifier, "rb"))
+
         # Predict
-        test_data = vec_data[train_index:]
+        if unseen:
+            prediction_data = ud.get_unseen_data_features(file_vectorizer, unseen_df_file,
+                                        unseen_data_vec_file, use_abstract, COL_ABSTRACT_NAME,
+                                        use_ne_types, COL_NE_TYPE_NAME, ne_weight,
+                                        use_stemm=use_stemm)
+        else:
+            prediction_data = vec_data[train_index:]
+
 
 
         # makes no sense to predict
-        if not test_data.any():
+        if not prediction_data.any():
             return
 
         predictions = []
         try:
-            predictions = classifier.predict(test_data)
+            predictions = classifier.predict(prediction_data)
         except Exception as e:
             logger.error('Failed to classify: ' + str(e))
             logger.error('Exiting')
