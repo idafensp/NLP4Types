@@ -1,0 +1,9 @@
+sudo pip install pandas
+sudo pip install rdflib
+sudo pip install requests
+sudo pip install sparqlwrapper
+sudo pip install sklearn
+sudo pip install scipy
+sudo pip install nltk
+  >>> import nltk
+  >>> nltk.download('stopwords') # in the python interpreter
