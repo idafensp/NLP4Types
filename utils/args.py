@@ -20,6 +20,7 @@ class Args:
         self.parser.add_argument("--prefix", help="Common prefix of inpunt and output files" , required=True)
         self.parser.add_argument("--ibase", help="Path to the input files folder", required=True)
         self.parser.add_argument("--obase", help="Path to the output files folder", required=True)
+        self.parser.add_argument("--log", help="Log file", default="./log_nlp4types.log")
 
         # num args
         self.parser.add_argument("--neweight", help="Weight for the NE types, default 1", type=int, default=1)

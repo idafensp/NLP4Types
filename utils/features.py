@@ -25,6 +25,9 @@ def vectorize_data(text_list, from_ind, to_ind,  use_tf_idf = True):
 
         # Representation of the data using TF-IDF
         vectorizer = TfidfVectorizer(tokenizer=custom_tokenizer)
+
+        # TODO this should change: fit only with train data, transform train and test
+
         vectorised_train_data = vectorizer.fit_transform(train_data)
         return vectorised_train_data, vectorizer
 

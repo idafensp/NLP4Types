@@ -22,6 +22,7 @@ COL_NE_TYPE_NAME = 'ne_types'
 COL_PREDICTIONS_NAME = 'predictions'
 COL_LABELS_NAME = 'labels'
 
+
 def get_types_and_abstracts(types_path, abstract_path, res_path):
     logger.info("Starting get_types_and_abstracts")
     dft = dbp.get_resources_from_types([], types_path)
@@ -48,10 +49,6 @@ def main():
     """
     logger.info("Starting NLP 4 Types")
 
-    ps = uarg.Args()
-    args = ps.get_args()
-
-    logger.info("Arguments %s" % args)
 
     # TODO: add these as CLI parameters
     # Files
@@ -263,6 +260,17 @@ def main():
 if __name__ == '__main__':
     import logging.config
 
-    logging.basicConfig(filename='log_nlp4types.log', format='%(asctime)s %(levelname)s %(message)s',
+
+    ps = uarg.Args()
+    args = ps.get_args()
+
+    logger.info("Arguments %s" % args)
+
+    logfile='log_nlp4types.log'
+    if args.log:
+        logfile = args.log
+
+
+    logging.basicConfig(filename=logfile, format='%(asctime)s %(levelname)s %(message)s',
                         level=logger.DEBUG)
     main()
