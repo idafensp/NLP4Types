@@ -36,3 +36,20 @@ def vectorize_data(text_list, from_ind, to_ind,  use_tf_idf = True):
         logger.warning("TODO: pending count vectorizer")
 
     return []
+
+def vectorize_data_unseen(vectorizer, text_list,  use_tf_idf = True):
+    logger.info("Starting vectorize_data for a unseen text list with %s entries, use_tf_idf?=%s," % (len(text_list), use_tf_idf))
+
+    # time to vectorize, either using count or tf-idf
+    logger.info("vectorize_data - vectorization")
+    if use_tf_idf:
+
+        # http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
+        vectorised_data = vectorizer.transform(text_list)
+        return vectorised_data
+
+    else:
+        # TODO:
+        logger.warning("TODO: pending count vectorizer")
+
+    return []

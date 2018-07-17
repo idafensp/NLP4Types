@@ -8,18 +8,28 @@ class Steps:
     lstep = -1
 
     times = []
+    tags = []
 
     def __init__(self, fs = 0, ls=1000):
         self.fstep = fs
         self.lstep = ls
 
-    def isstep(self, step):
-        if self.lstep > step >= self.fstep:
-            self.times.append(time.time())
-            logger.debug("Starting step %s"  % step)
+    def isstep(self, step, tag=""):
+        if self.lstep >= step >= self.fstep:
+
+            new_time = time.time()
+            self.times.append(new_time)
+            self.tags.append(tag)
+
+            logger.debug("Starting step %s (%s)"  % (step,tag))
+
+            if len(self.times) > 1:
+                step_time = new_time - self.times[-2]
+                logger.debug("Previous step (%s) took %s seconds"  % (self.tags[-2],step_time))
+            
             return True
         else:
-            logger.debug("Skipping step %s"  % step)
+            logger.debug("Skipping step %s (%s)"  % (step,tag))
             return False
 
     def endsteps(self):
@@ -39,7 +49,7 @@ class Steps:
         time_string = time_string + str(self.times) + "\n-----------\n"
         for (i,t) in enumerate(self.times[1:]):
             time_lapse = t - self.times[i]
-            ts = "%s) Step %s took=%s secs." % (i, (self.fstep+i), time_lapse)
+            ts = "%s) Step %s (%s) took=%s secs." % (i, (self.fstep+i), self.tags[i],time_lapse)
             time_string  = time_string + ts + "\n"
 
 

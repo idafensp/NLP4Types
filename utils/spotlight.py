@@ -35,7 +35,7 @@ class SpotLightNER:
         try:
             resp = requests.post(self.annotate_service_url, data=parameters, headers=headerinfo)
         except:
-            logger.error("Failed requesting URL for request url=%s" % (resp.url))
+            logger.error("Failed requesting URL for request url=%s" % (self.annotate_service_url))
             return []
 
         if resp.status_code != 200:

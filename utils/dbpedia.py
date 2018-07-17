@@ -1,6 +1,8 @@
 # DBPEDIA
 import rdflib
 import pandas as pd
+import stringutils as su
+
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 import logging
@@ -26,7 +28,7 @@ def get_typed_resources(class_list, db_types_file):
 
 
 
-def get_resources_from_types(class_list, db_types_file, remove_owl_thing = True):
+def get_resources_from_types(class_list, db_types_file, remove_owl_thing = True, encode=False):
     logger.debug("Starting get_resources_from_types from %s" % (db_types_file))
 
     df_types = pd.read_csv(db_types_file, sep=' ', names = ["individual", "typeprop", "type", "dot"])
@@ -42,12 +44,18 @@ def get_resources_from_types(class_list, db_types_file, remove_owl_thing = True)
     if remove_owl_thing:
         df_types = df_types[df_types.type != OWL_THING]
 
+    if encode:
+        # encode all individuals uris
+        df_types['individual'] = df_types['individual'].apply(su.encode_url)
+
     return df_types
 
-def get_resource_abstracts(class_list, abstracts_file):
+def get_resource_abstracts(class_list, abstracts_file, encode=False):
     logger.debug("Starting get_resource_abstracts from %s" % (abstracts_file))
 
     df_abstract = pd.read_csv(abstracts_file, sep=' ', names = ["individual", "abstractprop", "abstract", "dot"])
+
+
     logger.debug("Got %s instance abstracts from file %s" % (len(df_abstract),abstracts_file))
 
     #this takes quite some time
@@ -56,6 +64,11 @@ def get_resource_abstracts(class_list, abstracts_file):
 
     #remove unnecesary columnes (typeprop, dot)
     df_abstract=df_abstract.drop(columns=['abstractprop', 'dot'])
+
+
+    if encode:
+        # encode all individuals uris
+        df_abstract['individual'] = df_abstract['individual'].apply(su.encode_url)
 
     return df_abstract
 

@@ -27,5 +27,11 @@ def join_dataframes(df1, df2):
     # df_res = df1.set_index('individual').join(df2.set_index('individual'))
 
     # https://chrisalbon.com/python/data_wrangling/pandas_join_merge_dataframe/
+
+    #print(df1['individual'])
+    #print(".....")
+    #print(df2['individual'])
+    #print(".....")
+
     df_res = pd.merge(df1, df2, on='individual')
     return df_res
