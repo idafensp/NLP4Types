@@ -27,6 +27,7 @@ class Args:
         self.parser.add_argument("--obase", help="Path to the output files folder", required=True)
         self.parser.add_argument("--dbtree", help="Path to the ontology tree pre-calculated", required=True)
         self.parser.add_argument("--log", help="Log file", default="./log_nlp4types.log")
+        self.parser.add_argument("--fclassifier", help="Classifier for Flask UI", default="./flask_classifier.log")
 
         # num args
         self.parser.add_argument("--neweight", help="Weight for the NE types, default 1", type=int, default=1)

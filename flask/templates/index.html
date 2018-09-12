@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Idafen Santana P&eacute;rez">
+    <link rel="icon" href="../../../../favicon.ico">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+
+
+    <title>NLP4Types Demo</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+          integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+
+
+    <!-- Custom styles for this template -->
+    <link href="static/css/form-validation.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container">
+    <div class="py-5 text-center">
+        <img class="d-block mx-auto mb-4" src="static/img/bannerbeta.png" alt="" width="300em">
+        <p class="lead">
+
+            This demo tool showcases the  type
+            inference models we have developed for predicting types based
+            on textual descriptions of resources.
+
+        </p>
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-md-8 order-md-1">
+            <h4 class="mb-3">Description text <i class="fas fa-info-circle itool" data-toggle="tooltip" title="Paste/write any text
+          describing and entity (e.g. Person, Place, Soccer Player, etc.). Any text between 50 and 5000 chars. will be
+          accepted. Currently we only support english texts"></i></h4>
+            <form class="needs-validation" novalidate>
+
+
+                <div class="mb-3 form-group">
+                    <!--<label for="exampleFormControlTextarea1">Example textarea</label>-->
+                    <textarea class="form-control" id="description" name="description" rows="3" cols="20"></textarea>
+                    <small class="grey">If you don't feel inspired, you can copy &amp; paste from a <a
+                            href="https://en.wikipedia.org/wiki/Special:Random" target="_blank">
+                        random Wikipedia article <i class="fas fa-external-link-alt"></i></a></small>
+                </div>
+
+
+                <h5 class="mb-3">Debug <i class="fas fa-info-circle  itool" data-toggle="tooltip" title="The following text area is intended for debug
+            purposes and will be removed once this demo tool is finished. Right now it is used to display internal parameters of the model and the entities found"></i>
+                </h5>
+
+
+                <div class="mb-3 form-group">
+                    <!--<label for="exampleFormControlTextarea1">Example textarea</label>-->
+                    <textarea class="form-control" id="debug" name="debug" rows="3" cols="20" readonly></textarea>
+                </div>
+
+                <!--
+                <hr class="mb-4">
+
+                <h5 class="mb-3">Options</h5>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="same-address">
+                  <label class="custom-control-label" for="same-address">Usar NER...</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="save-info">
+                  <label class="custom-control-label" for="save-info">Usar TF-IDF...</label>
+                </div>
+
+                -->
+        </div>
+
+        <div class="col-md-4 order-md-2 mb-4">
+
+            <button type="button" class="btn btn-primary btn-lg btn-block" id="btn-process">Guess type</button>
+
+            <br>
+
+
+            <!--
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+
+              <span class="text-muted">Types</span>
+            </h4>
+            -->
+            <ul class="list-group mb-3">
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <div>
+                        <h5 class="my-0"><a href="http://dbpedia.org/ontology/Person" id="stname">...</a></h5>
+                        <small class="text-muted" id="ltname">...</small>
+                    </div>
+                    <span class="text-muted"><div class="loader" id="typeloader"></div>
+              </span>
+                </li>
+                <!--
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                  <div>
+                    <h6 class="my-0"><a href="http://dbpedia.org/ontology/Place">Place</a></h6>
+                    <small class="text-muted">...</small>
+                  </div>
+                  <span class="text-muted">0.87</span>
+                </li>
+                -->
+
+                <div id="feedback">
+                    <h5 class="my-0 air1">Is this type right? <i id="feed-info-btn" class="far fa-question-circle itool"
+                                                                 data-toggle="tooltip"
+                                                                 title="Click me for more information"></i></h5>
+
+                    <button id="feed-btn-yes" type="button" class="btn btn-outline-success btn-md btn-block">Yes,
+                        totally
+                    </button>
+                    <button id="feed-btn-precise" type="button" class="btn btn-outline-warning btn-md btn-block">Should
+                        be more precise
+                    </button>
+                    <button id="feed-btn-abstract" type="button" class="btn btn-outline-info btn-md btn-block">Should be
+                        more abstract
+                    </button>
+                    <button id="feed-btn-related" type="button" class="btn btn-outline-secondary btn-md btn-block">
+                        Somehow related
+                    </button>
+                    <button id="feed-btn-no" type="button" class="btn btn-outline-danger btn-md btn-block">No, it is
+                        totally wrong
+                    </button>
+                </div>
+
+            </ul>
+        </div>
+
+
+        </form>
+
+
+    </div>
+
+    <footer class="my-5 pt-5 text-muted text-center text-small">
+        <p class="mb-1"><a href="http://w3id.org/people/idafensp">Idafen Santana-Perez</a></p>
+        <p class="mb-1"><a href="http://www.oeg-upm.net/">&copy; 2018 Ontology Engineering Group</a></p>
+        <p>This work was partially funded by projects RTC-2016-4952-7, TIN2013-46238-C4-2-R and TIN2016-78011-C4-4-R,
+            from the Spanish State Investigation Agency of the MINECO and FEDER Funds</p>
+        <ul class="list-inline">
+            <li class="list-inline-item"><a href="https://github.com/idafensp/NLP4Types">Github</a></li>
+            <li class="list-inline-item"><a href="#">About</a></li>
+            <li class="list-inline-item"><a href="mailto:isantana@fi.upm.es?Subject=[NLP4Types] Feedback" target="_top">Feedback</a>
+            </li>
+        </ul>
+
+        <small>This template is based on the <a href="https://getbootstrap.com/docs/4.1/examples/checkout/">Bootstrap Checkout</a>
+        example.
+        </small>
+    </footer>
+
+    <!-- Modal msg-->
+    <div class="modal fade" id="feed_msg" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><span id="feed_msg_head">...</span>&nbsp;</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="feed_msg_text"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal instruction -->
+    <div class="modal fade" id="feed-info-modal" tabindex="-1" role="dialog" aria-labelledby="feedbackInfo"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="far fa-comment-alt"></i> Feedback instructions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Whether a type is correctly assigned or not is a subjective judgment. The following are just some
+                        general
+                        criteria tips on how to evaluate the correctness of the predictions.</p>
+
+
+                    <p><strong>Note:</strong> mind that in several cases, more precise or abstract types do not exist.
+                        If you are not sure
+                        you can check the <a href="http://mappings.dbpedia.org/server/ontology/classes/">DBpedia
+                            ontology hierarchy</a></p>
+
+                    <hr>
+
+                    <p>
+                        <span class="badge badge-success"> Yes, totally </span>
+                        If you think the system nailed the prediction (e.g. predicting <a
+                            href="http://dbpedia.org/ontology/Writer">
+                        Writer</a> for a text describing Shakespeare)
+
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        <span class="badge badge-warning"> Should be more precise </span>
+                        If you think there is a more concrete type for your description (e.g. the system predicted
+                        <a href="http://dbpedia.org/ontology/Person">Person</a> but you expected something like <a
+                            href="http://dbpedia.org/ontology/SoccerPlayer">
+                        Soccer Player</a>)
+
+                    </p>
+
+
+                    <hr>
+
+
+                    <p>
+                        <span class="badge badge-info"> Should be more abstract </span>
+                        If you think there is a more generic type for your description (e.g. the system predicted
+                        <a href="http://dbpedia.org/ontology/City">City</a>
+                        but you expected something like <a href="http://dbpedia.org/ontology/Place">Place</a>)
+                    </p>
+
+
+                    <hr>
+
+
+                    <p>
+                        <span class="badge badge-secondary"> Somehow related </span>
+                        When you think the precition is neither more specific, nor more abstract, but still somehow
+                        related to the type
+                        you were expecting (e.g. the system predicted <a href="http://dbpedia.org/ontology/Valley">Valley</a>,
+                        but you were expecting <a href="http://dbpedia.org/ontology/Beach">Beach</a>)
+                    </p>
+
+                    <hr>
+
+                    <p>
+                        <span class="badge badge-danger"> No, it is totally wrong </span>
+                        The system did a terrible job predicting, and the prediction is totally out of place (e.g. it
+                        predicted
+                        <a href="http://dbpedia.org/ontology/MusicalWork">Musical Work</a> and you expected an <a
+                            href="http://dbpedia.org/ontology/Spacecraft">Spacecraft</a>)
+
+                    </p>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal instruction -->
+    <div class="modal fade" id="feed-extra-modal" tabindex="-1" role="dialog" aria-labelledby="feedbackExtraInfo"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit"></i> Feedback</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <form class="needs-validation" novalidate>
+
+                        <h5>Thanks for using our demo tool</h5>
+                        <p>
+                            In the following fields you can add some extra (valuable) information for your feedback.
+                            It is totally optional, but we will highly appreciate it.
+                        </p>
+
+
+                        <!-- Expected types -->
+                        <div class="form-group" id="feed-expected-div">
+                            <label for="expected-type"><strong>I was expecting the type...</strong></label>
+                            <select class="form-control" id="expected-type">
+                                <option value='None' selected>None of the list</option>
+                                <option value='Activity'> Activity</option>
+                                <option value='Game'>- Game</option>
+                                <option value='BoardGame'>-- BoardGame</option>
+                                <option value='CardGame'>-- CardGame</option>
+                                <option value='Sales'>- Sales</option>
+                                <option value='Sport'>- Sport</option>
+                                <option value='Athletics'>-- Athletics</option>
+                                <option value='TeamSport'>-- TeamSport</option>
+                                <option value='Agent'> Agent</option>
+                                <option value='Deity'>- Deity</option>
+                                <option value='Employer'>- Employer</option>
+                                <option value='Family'>- Family</option>
+                                <option value='NobleFamily'>-- NobleFamily</option>
+                                <option value='FictionalCharacter'>- FictionalCharacter</option>
+                                <option value='ComicsCharacter'>-- ComicsCharacter</option>
+                                <option value='AnimangaCharacter'>--- AnimangaCharacter</option>
+                                <option value='DisneyCharacter'>-- DisneyCharacter</option>
+                                <option value='MythologicalFigure'>-- MythologicalFigure</option>
+                                <option value='NarutoCharacter'>-- NarutoCharacter</option>
+                                <option value='SoapCharacter'>-- SoapCharacter</option>
+                                <option value='Organisation'>- Organisation</option>
+                                <option value='Broadcaster'>-- Broadcaster</option>
+                                <option value='BroadcastNetwork'>--- BroadcastNetwork</option>
+                                <option value='RadioStation'>--- RadioStation</option>
+                                <option value='TelevisionStation'>--- TelevisionStation</option>
+                                <option value='Company'>-- Company</option>
+                                <option value='Bank'>--- Bank</option>
+                                <option value='Brewery'>--- Brewery</option>
+                                <option value='Caterer'>--- Caterer</option>
+                                <option value='LawFirm'>--- LawFirm</option>
+                                <option value='PublicTransitSystem'>--- PublicTransitSystem</option>
+                                <option value='Airline'>---- Airline</option>
+                                <option value='BusCompany'>---- BusCompany</option>
+                                <option value='Publisher'>--- Publisher</option>
+                                <option value='RecordLabel'>--- RecordLabel</option>
+                                <option value='Winery'>--- Winery</option>
+                                <option value='EducationalInstitution'>-- EducationalInstitution</option>
+                                <option value='College'>--- College</option>
+                                <option value='Library'>--- Library</option>
+                                <option value='School'>--- School</option>
+                                <option value='University'>--- University</option>
+                                <option value='EmployersOrganisation'>-- EmployersOrganisation</option>
+                                <option value='GeopoliticalOrganisation'>-- GeopoliticalOrganisation</option>
+                                <option value='GovernmentAgency'>-- GovernmentAgency</option>
+                                <option value='GovernmentCabinet'>--- GovernmentCabinet</option>
+                                <option value='Group'>-- Group</option>
+                                <option value='Band'>--- Band</option>
+                                <option value='ComedyGroup'>--- ComedyGroup</option>
+                                <option value='InternationalOrganisation'>-- InternationalOrganisation</option>
+                                <option value='Legislature'>-- Legislature</option>
+                                <option value='MilitaryUnit'>-- MilitaryUnit</option>
+                                <option value='Non-ProfitOrganisation'>-- Non-ProfitOrganisation</option>
+                                <option value='RecordOffice'>--- RecordOffice</option>
+                                <option value='Parliament'>-- Parliament</option>
+                                <option value='PoliticalParty'>-- PoliticalParty</option>
+                                <option value='ReligiousOrganisation'>-- ReligiousOrganisation</option>
+                                <option value='ClericalOrder'>--- ClericalOrder</option>
+                                <option value='SambaSchool'>-- SambaSchool</option>
+                                <option value='SportsClub'>-- SportsClub</option>
+                                <option value='HockeyClub'>--- HockeyClub</option>
+                                <option value='RugbyClub'>--- RugbyClub</option>
+                                <option value='SoccerClub'>--- SoccerClub</option>
+                                <option value='NationalSoccerClub'>---- NationalSoccerClub</option>
+                                <option value='SportsLeague'>-- SportsLeague</option>
+                                <option value='AmericanFootballLeague'>--- AmericanFootballLeague</option>
+                                <option value='AustralianFootballLeague'>--- AustralianFootballLeague</option>
+                                <option value='AutoRacingLeague'>--- AutoRacingLeague</option>
+                                <option value='BaseballLeague'>--- BaseballLeague</option>
+                                <option value='BasketballLeague'>--- BasketballLeague</option>
+                                <option value='BowlingLeague'>--- BowlingLeague</option>
+                                <option value='BoxingLeague'>--- BoxingLeague</option>
+                                <option value='CanadianFootballLeague'>--- CanadianFootballLeague</option>
+                                <option value='CricketLeague'>--- CricketLeague</option>
+                                <option value='CurlingLeague'>--- CurlingLeague</option>
+                                <option value='CyclingLeague'>--- CyclingLeague</option>
+                                <option value='FieldHockeyLeague'>--- FieldHockeyLeague</option>
+                                <option value='FormulaOneRacing'>--- FormulaOneRacing</option>
+                                <option value='GolfLeague'>--- GolfLeague</option>
+                                <option value='HandballLeague'>--- HandballLeague</option>
+                                <option value='IceHockeyLeague'>--- IceHockeyLeague</option>
+                                <option value='InlineHockeyLeague'>--- InlineHockeyLeague</option>
+                                <option value='LacrosseLeague'>--- LacrosseLeague</option>
+                                <option value='MixedMartialArtsLeague'>--- MixedMartialArtsLeague</option>
+                                <option value='MotorcycleRacingLeague'>--- MotorcycleRacingLeague</option>
+                                <option value='PaintballLeague'>--- PaintballLeague</option>
+                                <option value='PoloLeague'>--- PoloLeague</option>
+                                <option value='RadioControlledRacingLeague'>--- RadioControlledRacingLeague</option>
+                                <option value='RugbyLeague'>--- RugbyLeague</option>
+                                <option value='SoccerLeague'>--- SoccerLeague</option>
+                                <option value='SoftballLeague'>--- SoftballLeague</option>
+                                <option value='SpeedwayLeague'>--- SpeedwayLeague</option>
+                                <option value='TennisLeague'>--- TennisLeague</option>
+                                <option value='VideogamesLeague'>--- VideogamesLeague</option>
+                                <option value='VolleyballLeague'>--- VolleyballLeague</option>
+                                <option value='SportsTeam'>-- SportsTeam</option>
+                                <option value='AmericanFootballTeam'>--- AmericanFootballTeam</option>
+                                <option value='AustralianFootballTeam'>--- AustralianFootballTeam</option>
+                                <option value='BaseballTeam'>--- BaseballTeam</option>
+                                <option value='BasketballTeam'>--- BasketballTeam</option>
+                                <option value='CanadianFootballTeam'>--- CanadianFootballTeam</option>
+                                <option value='CricketTeam'>--- CricketTeam</option>
+                                <option value='CyclingTeam'>--- CyclingTeam</option>
+                                <option value='FormulaOneTeam'>--- FormulaOneTeam</option>
+                                <option value='HandballTeam'>--- HandballTeam</option>
+                                <option value='HockeyTeam'>--- HockeyTeam</option>
+                                <option value='SpeedwayTeam'>--- SpeedwayTeam</option>
+                                <option value='TermOfOffice'>-- TermOfOffice</option>
+                                <option value='TradeUnion'>-- TradeUnion</option>
+                                <option value='Person'>- Person</option>
+                                <option value='Archeologist'>-- Archeologist</option>
+                                <option value='Architect'>-- Architect</option>
+                                <option value='Aristocrat'>-- Aristocrat</option>
+                                <option value='Artist'>-- Artist</option>
+                                <option value='Actor'>--- Actor</option>
+                                <option value='AdultActor'>---- AdultActor</option>
+                                <option value='VoiceActor'>---- VoiceActor</option>
+                                <option value='Comedian'>--- Comedian</option>
+                                <option value='ComicsCreator'>--- ComicsCreator</option>
+                                <option value='Dancer'>--- Dancer</option>
+                                <option value='FashionDesigner'>--- FashionDesigner</option>
+                                <option value='Humorist'>--- Humorist</option>
+                                <option value='MusicalArtist'>--- MusicalArtist</option>
+                                <option value='BackScene'>---- BackScene</option>
+                                <option value='ClassicalMusicArtist'>---- ClassicalMusicArtist</option>
+                                <option value='Instrumentalist'>---- Instrumentalist</option>
+                                <option value='Guitarist'>----- Guitarist</option>
+                                <option value='MusicDirector'>---- MusicDirector</option>
+                                <option value='Singer'>---- Singer</option>
+                                <option value='Painter'>--- Painter</option>
+                                <option value='Photographer'>--- Photographer</option>
+                                <option value='Sculptor'>--- Sculptor</option>
+                                <option value='Astronaut'>-- Astronaut</option>
+                                <option value='Athlete'>-- Athlete</option>
+                                <option value='ArcherPlayer'>--- ArcherPlayer</option>
+                                <option value='AthleticsPlayer'>--- AthleticsPlayer</option>
+                                <option value='AustralianRulesFootballPlayer'>--- AustralianRulesFootballPlayer</option>
+                                <option value='BadmintonPlayer'>--- BadmintonPlayer</option>
+                                <option value='BaseballPlayer'>--- BaseballPlayer</option>
+                                <option value='BasketballPlayer'>--- BasketballPlayer</option>
+                                <option value='Bodybuilder'>--- Bodybuilder</option>
+                                <option value='Boxer'>--- Boxer</option>
+                                <option value='AmateurBoxer'>---- AmateurBoxer</option>
+                                <option value='BullFighter'>--- BullFighter</option>
+                                <option value='Canoeist'>--- Canoeist</option>
+                                <option value='ChessPlayer'>--- ChessPlayer</option>
+                                <option value='Cricketer'>--- Cricketer</option>
+                                <option value='Cyclist'>--- Cyclist</option>
+                                <option value='DartsPlayer'>--- DartsPlayer</option>
+                                <option value='Fencer'>--- Fencer</option>
+                                <option value='GaelicGamesPlayer'>--- GaelicGamesPlayer</option>
+                                <option value='GolfPlayer'>--- GolfPlayer</option>
+                                <option value='GridironFootballPlayer'>--- GridironFootballPlayer</option>
+                                <option value='AmericanFootballPlayer'>---- AmericanFootballPlayer</option>
+                                <option value='CanadianFootballPlayer'>---- CanadianFootballPlayer</option>
+                                <option value='Gymnast'>--- Gymnast</option>
+                                <option value='HandballPlayer'>--- HandballPlayer</option>
+                                <option value='HighDiver'>--- HighDiver</option>
+                                <option value='HorseRider'>--- HorseRider</option>
+                                <option value='Jockey'>--- Jockey</option>
+                                <option value='LacrossePlayer'>--- LacrossePlayer</option>
+                                <option value='MartialArtist'>--- MartialArtist</option>
+                                <option value='MotorsportRacer'>--- MotorsportRacer</option>
+                                <option value='MotorcycleRider'>---- MotorcycleRider</option>
+                                <option value='MotocycleRacer'>----- MotocycleRacer</option>
+                                <option value='SpeedwayRider'>----- SpeedwayRider</option>
+                                <option value='RacingDriver'>---- RacingDriver</option>
+                                <option value='DTMRacer'>----- DTMRacer</option>
+                                <option value='FormulaOneRacer'>----- FormulaOneRacer</option>
+                                <option value='NascarDriver'>----- NascarDriver</option>
+                                <option value='RallyDriver'>----- RallyDriver</option>
+                                <option value='NationalCollegiateAthleticAssociationAthlete'>--- NationalCollegiateAthleticAssociationAthlete</option>
+                                <option value='NetballPlayer'>--- NetballPlayer</option>
+                                <option value='PokerPlayer'>--- PokerPlayer</option>
+                                <option value='Rower'>--- Rower</option>
+                                <option value='RugbyPlayer'>--- RugbyPlayer</option>
+                                <option value='SnookerPlayer'>--- SnookerPlayer</option>
+                                <option value='SnookerChamp'>---- SnookerChamp</option>
+                                <option value='SoccerPlayer'>--- SoccerPlayer</option>
+                                <option value='SquashPlayer'>--- SquashPlayer</option>
+                                <option value='Surfer'>--- Surfer</option>
+                                <option value='Swimmer'>--- Swimmer</option>
+                                <option value='TableTennisPlayer'>--- TableTennisPlayer</option>
+                                <option value='TeamMember'>--- TeamMember</option>
+                                <option value='TennisPlayer'>--- TennisPlayer</option>
+                                <option value='VolleyballPlayer'>--- VolleyballPlayer</option>
+                                <option value='BeachVolleyballPlayer'>---- BeachVolleyballPlayer</option>
+                                <option value='WaterPoloPlayer'>--- WaterPoloPlayer</option>
+                                <option value='WinterSportPlayer'>--- WinterSportPlayer</option>
+                                <option value='Biathlete'>---- Biathlete</option>
+                                <option value='BobsleighAthlete'>---- BobsleighAthlete</option>
+                                <option value='CrossCountrySkier'>---- CrossCountrySkier</option>
+                                <option value='Curler'>---- Curler</option>
+                                <option value='FigureSkater'>---- FigureSkater</option>
+                                <option value='IceHockeyPlayer'>---- IceHockeyPlayer</option>
+                                <option value='NordicCombined'>---- NordicCombined</option>
+                                <option value='Skater'>---- Skater</option>
+                                <option value='Ski_jumper'>---- Ski_jumper</option>
+                                <option value='Skier'>---- Skier</option>
+                                <option value='SpeedSkater'>---- SpeedSkater</option>
+                                <option value='Wrestler'>--- Wrestler</option>
+                                <option value='SumoWrestler'>---- SumoWrestler</option>
+                                <option value='BeautyQueen'>-- BeautyQueen</option>
+                                <option value='BusinessPerson'>-- BusinessPerson</option>
+                                <option value='Chef'>-- Chef</option>
+                                <option value='Cleric'>-- Cleric</option>
+                                <option value='Cardinal'>--- Cardinal</option>
+                                <option value='ChristianBishop'>--- ChristianBishop</option>
+                                <option value='Archbishop'>---- Archbishop</option>
+                                <option value='ChristianPatriarch'>--- ChristianPatriarch</option>
+                                <option value='Pope'>--- Pope</option>
+                                <option value='Priest'>--- Priest</option>
+                                <option value='Saint'>--- Saint</option>
+                                <option value='Vicar'>--- Vicar</option>
+                                <option value='Coach'>-- Coach</option>
+                                <option value='AmericanFootballCoach'>--- AmericanFootballCoach</option>
+                                <option value='CollegeCoach'>--- CollegeCoach</option>
+                                <option value='VolleyballCoach'>--- VolleyballCoach</option>
+                                <option value='Criminal'>-- Criminal</option>
+                                <option value='Murderer'>--- Murderer</option>
+                                <option value='SerialKiller'>---- SerialKiller</option>
+                                <option value='Economist'>-- Economist</option>
+                                <option value='Egyptologist'>-- Egyptologist</option>
+                                <option value='Engineer'>-- Engineer</option>
+                                <option value='Farmer'>-- Farmer</option>
+                                <option value='HorseTrainer'>-- HorseTrainer</option>
+                                <option value='Journalist'>-- Journalist</option>
+                                <option value='Judge'>-- Judge</option>
+                                <option value='Lawyer'>-- Lawyer</option>
+                                <option value='Linguist'>-- Linguist</option>
+                                <option value='MemberResistanceMovement'>-- MemberResistanceMovement</option>
+                                <option value='MilitaryPerson'>-- MilitaryPerson</option>
+                                <option value='Model'>-- Model</option>
+                                <option value='Monarch'>-- Monarch</option>
+                                <option value='MovieDirector'>-- MovieDirector</option>
+                                <option value='Noble'>-- Noble</option>
+                                <option value='OfficeHolder'>-- OfficeHolder</option>
+                                <option value='OrganisationMember'>-- OrganisationMember</option>
+                                <option value='SportsTeamMember'>--- SportsTeamMember</option>
+                                <option value='Philosopher'>-- Philosopher</option>
+                                <option value='PlayboyPlaymate'>-- PlayboyPlaymate</option>
+                                <option value='Politician'>-- Politician</option>
+                                <option value='Ambassador'>--- Ambassador</option>
+                                <option value='Chancellor'>--- Chancellor</option>
+                                <option value='Congressman'>--- Congressman</option>
+                                <option value='Deputy'>--- Deputy</option>
+                                <option value='Governor'>--- Governor</option>
+                                <option value='Lieutenant'>--- Lieutenant</option>
+                                <option value='Mayor'>--- Mayor</option>
+                                <option value='MemberOfParliament'>--- MemberOfParliament</option>
+                                <option value='Minister'>--- Minister</option>
+                                <option value='President'>--- President</option>
+                                <option value='PrimeMinister'>--- PrimeMinister</option>
+                                <option value='Senator'>--- Senator</option>
+                                <option value='VicePresident'>--- VicePresident</option>
+                                <option value='VicePrimeMinister'>--- VicePrimeMinister</option>
+                                <option value='PoliticianSpouse'>-- PoliticianSpouse</option>
+                                <option value='Presenter'>-- Presenter</option>
+                                <option value='RadioHost'>--- RadioHost</option>
+                                <option value='TelevisionHost'>--- TelevisionHost</option>
+                                <option value='Producer'>-- Producer</option>
+                                <option value='Psychologist'>-- Psychologist</option>
+                                <option value='Referee'>-- Referee</option>
+                                <option value='Religious'>-- Religious</option>
+                                <option value='RomanEmperor'>-- RomanEmperor</option>
+                                <option value='Royalty'>-- Royalty</option>
+                                <option value='BritishRoyalty'>--- BritishRoyalty</option>
+                                <option value='Baronet'>---- Baronet</option>
+                                <option value='Scientist'>-- Scientist</option>
+                                <option value='Biologist'>--- Biologist</option>
+                                <option value='Entomologist'>--- Entomologist</option>
+                                <option value='Medician'>--- Medician</option>
+                                <option value='Professor'>--- Professor</option>
+                                <option value='SportsManager'>-- SportsManager</option>
+                                <option value='SoccerManager'>--- SoccerManager</option>
+                                <option value='TelevisionDirector'>-- TelevisionDirector</option>
+                                <option value='TheatreDirector'>-- TheatreDirector</option>
+                                <option value='Writer'>-- Writer</option>
+                                <option value='Historian'>--- Historian</option>
+                                <option value='MusicComposer'>--- MusicComposer</option>
+                                <option value='PlayWright'>--- PlayWright</option>
+                                <option value='Poet'>--- Poet</option>
+                                <option value='ScreenWriter'>--- ScreenWriter</option>
+                                <option value='SongWriter'>--- SongWriter</option>
+                                <option value='Altitude'> Altitude</option>
+                                <option value='AnatomicalStructure'> AnatomicalStructure</option>
+                                <option value='Artery'>- Artery</option>
+                                <option value='BloodVessel'>- BloodVessel</option>
+                                <option value='Bone'>- Bone</option>
+                                <option value='Brain'>- Brain</option>
+                                <option value='Embryology'>- Embryology</option>
+                                <option value='Ligament'>- Ligament</option>
+                                <option value='Lymph'>- Lymph</option>
+                                <option value='Muscle'>- Muscle</option>
+                                <option value='Nerve'>- Nerve</option>
+                                <option value='Vein'>- Vein</option>
+                                <option value='Area'> Area</option>
+                                <option value='Award'> Award</option>
+                                <option value='Decoration'>- Decoration</option>
+                                <option value='NobelPrize'>- NobelPrize</option>
+                                <option value='Biomolecule'> Biomolecule</option>
+                                <option value='Enzyme'>- Enzyme</option>
+                                <option value='Gene'>- Gene</option>
+                                <option value='HumanGene'>-- HumanGene</option>
+                                <option value='MouseGene'>-- MouseGene</option>
+                                <option value='Hormone'>- Hormone</option>
+                                <option value='Lipid'>- Lipid</option>
+                                <option value='Polysaccharide'>- Polysaccharide</option>
+                                <option value='Protein'>- Protein</option>
+                                <option value='Blazon'> Blazon</option>
+                                <option value='ChartsPlacements'> ChartsPlacements</option>
+                                <option value='ChemicalSubstance'> ChemicalSubstance</option>
+                                <option value='ChemicalCompound'>- ChemicalCompound</option>
+                                <option value='ChemicalElement'>- ChemicalElement</option>
+                                <option value='Drug'>- Drug</option>
+                                <option value='CombinationDrug'>-- CombinationDrug</option>
+                                <option value='MonoclonalAntibody'>-- MonoclonalAntibody</option>
+                                <option value='Vaccine'>-- Vaccine</option>
+                                <option value='Mineral'>- Mineral</option>
+                                <option value='Colour'> Colour</option>
+                                <option value='Currency'> Currency</option>
+                                <option value='Demographics'> Demographics</option>
+                                <option value='Depth'> Depth</option>
+                                <option value='Device'> Device</option>
+                                <option value='Battery'>- Battery</option>
+                                <option value='Camera'>- Camera</option>
+                                <option value='DigitalCamera'>-- DigitalCamera</option>
+                                <option value='Engine'>- Engine</option>
+                                <option value='AutomobileEngine'>-- AutomobileEngine</option>
+                                <option value='RocketEngine'>-- RocketEngine</option>
+                                <option value='InformationAppliance'>- InformationAppliance</option>
+                                <option value='Instrument'>- Instrument</option>
+                                <option value='Guitar'>-- Guitar</option>
+                                <option value='Organ'>-- Organ</option>
+                                <option value='MobilePhone'>- MobilePhone</option>
+                                <option value='Weapon'>- Weapon</option>
+                                <option value='Diploma'> Diploma</option>
+                                <option value='Disease'> Disease</option>
+                                <option value='ElectionDiagram'> ElectionDiagram</option>
+                                <option value='ElectricalSubstation'> ElectricalSubstation</option>
+                                <option value='EthnicGroup'> EthnicGroup</option>
+                                <option value='Event'> Event</option>
+                                <option value='Competition'>- Competition</option>
+                                <option value='Contest'>-- Contest</option>
+                                <option value='LifeCycleEvent'>- LifeCycleEvent</option>
+                                <option value='PersonalEvent'>-- PersonalEvent</option>
+                                <option value='NaturalEvent'>- NaturalEvent</option>
+                                <option value='Earthquake'>-- Earthquake</option>
+                                <option value='SolarEclipse'>-- SolarEclipse</option>
+                                <option value='StormSurge'>-- StormSurge</option>
+                                <option value='PenaltyShootOut'>- PenaltyShootOut</option>
+                                <option value='SocietalEvent'>- SocietalEvent</option>
+                                <option value='AcademicConference'>-- AcademicConference</option>
+                                <option value='Attack'>-- Attack</option>
+                                <option value='Convention'>-- Convention</option>
+                                <option value='Election'>-- Election</option>
+                                <option value='FilmFestival'>-- FilmFestival</option>
+                                <option value='HistoricalEvent'>-- HistoricalEvent</option>
+                                <option value='Meeting'>-- Meeting</option>
+                                <option value='MilitaryConflict'>-- MilitaryConflict</option>
+                                <option value='MusicFestival'>-- MusicFestival</option>
+                                <option value='Rebellion'>-- Rebellion</option>
+                                <option value='SpaceMission'>-- SpaceMission</option>
+                                <option value='SportsEvent'>-- SportsEvent</option>
+                                <option value='CyclingCompetition'>--- CyclingCompetition</option>
+                                <option value='FootballMatch'>--- FootballMatch</option>
+                                <option value='GrandPrix'>--- GrandPrix</option>
+                                <option value='InternationalFootballLeagueEvent'>--- InternationalFootballLeagueEvent</option>
+                                <option value='MixedMartialArtsEvent'>--- MixedMartialArtsEvent</option>
+                                <option value='NationalFootballLeagueEvent'>--- NationalFootballLeagueEvent</option>
+                                <option value='Olympics'>--- Olympics</option>
+                                <option value='OlympicEvent'>---- OlympicEvent</option>
+                                <option value='Race'>--- Race</option>
+                                <option value='CyclingRace'>---- CyclingRace</option>
+                                <option value='HorseRace'>---- HorseRace</option>
+                                <option value='MotorRace'>---- MotorRace</option>
+                                <option value='Tournament'>--- Tournament</option>
+                                <option value='GolfTournament'>---- GolfTournament</option>
+                                <option value='SoccerTournament'>---- SoccerTournament</option>
+                                <option value='TennisTournament'>---- TennisTournament</option>
+                                <option value='WomensTennisAssociationTournament'>---- WomensTennisAssociationTournament</option>
+                                <option value='WrestlingEvent'>--- WrestlingEvent</option>
+                                <option value='Flag'> Flag</option>
+                                <option value='Food'> Food</option>
+                                <option value='Beverage'>- Beverage</option>
+                                <option value='Beer'>-- Beer</option>
+                                <option value='Vodka'>-- Vodka</option>
+                                <option value='Wine'>-- Wine</option>
+                                <option value='ControlledDesignationOfOriginWine'>--- ControlledDesignationOfOriginWine</option>
+                                <option value='Cheese'>- Cheese</option>
+                                <option value='GeneLocation'> GeneLocation</option>
+                                <option value='HumanGeneLocation'>- HumanGeneLocation</option>
+                                <option value='MouseGeneLocation'>- MouseGeneLocation</option>
+                                <option value='GrossDomesticProduct'> GrossDomesticProduct</option>
+                                <option value='GrossDomesticProductPerCapita'> GrossDomesticProductPerCapita</option>
+                                <option value='Holiday'> Holiday</option>
+                                <option value='Identifier'> Identifier</option>
+                                <option value='TopLevelDomain'>- TopLevelDomain</option>
+                                <option value='Language'> Language</option>
+                                <option value='ProgrammingLanguage'>- ProgrammingLanguage</option>
+                                <option value='List'> List</option>
+                                <option value='TrackList'>- TrackList</option>
+                                <option value='MeanOfTransportation'> MeanOfTransportation</option>
+                                <option value='Aircraft'>- Aircraft</option>
+                                <option value='MilitaryAircraft'>-- MilitaryAircraft</option>
+                                <option value='Automobile'>- Automobile</option>
+                                <option value='Locomotive'>- Locomotive</option>
+                                <option value='MilitaryVehicle'>- MilitaryVehicle</option>
+                                <option value='Motorcycle'>- Motorcycle</option>
+                                <option value='On-SiteTransportation'>- On-SiteTransportation</option>
+                                <option value='ConveyorSystem'>-- ConveyorSystem</option>
+                                <option value='Escalator'>-- Escalator</option>
+                                <option value='MovingWalkway'>-- MovingWalkway</option>
+                                <option value='Rocket'>- Rocket</option>
+                                <option value='Ship'>- Ship</option>
+                                <option value='SpaceShuttle'>- SpaceShuttle</option>
+                                <option value='SpaceStation'>- SpaceStation</option>
+                                <option value='Spacecraft'>- Spacecraft</option>
+                                <option value='Train'>- Train</option>
+                                <option value='TrainCarriage'>- TrainCarriage</option>
+                                <option value='Tram'>- Tram</option>
+                                <option value='Media'> Media</option>
+                                <option value='MedicalSpecialty'> MedicalSpecialty</option>
+                                <option value='Medicine'> Medicine</option>
+                                <option value='Name'> Name</option>
+                                <option value='GivenName'>- GivenName</option>
+                                <option value='Surname'>- Surname</option>
+                                <option value='PersonFunction'> PersonFunction</option>
+                                <option value='PoliticalFunction'>- PoliticalFunction</option>
+                                <option value='Profession'>- Profession</option>
+                                <option value='Place'> Place</option>
+                                <option value='ArchitecturalStructure'>- ArchitecturalStructure</option>
+                                <option value='AmusementParkAttraction'>-- AmusementParkAttraction</option>
+                                <option value='RollerCoaster'>--- RollerCoaster</option>
+                                <option value='WaterRide'>--- WaterRide</option>
+                                <option value='Arena'>-- Arena</option>
+                                <option value='Building'>-- Building</option>
+                                <option value='Casino'>--- Casino</option>
+                                <option value='Castle'>--- Castle</option>
+                                <option value='Factory'>--- Factory</option>
+                                <option value='HistoricBuilding'>--- HistoricBuilding</option>
+                                <option value='Hospital'>--- Hospital</option>
+                                <option value='Hotel'>--- Hotel</option>
+                                <option value='Museum'>--- Museum</option>
+                                <option value='Prison'>--- Prison</option>
+                                <option value='ReligiousBuilding'>--- ReligiousBuilding</option>
+                                <option value='Church'>---- Church</option>
+                                <option value='Monastery'>---- Monastery</option>
+                                <option value='Mosque'>---- Mosque</option>
+                                <option value='Shrine'>---- Shrine</option>
+                                <option value='Synagogue'>---- Synagogue</option>
+                                <option value='Temple'>---- Temple</option>
+                                <option value='Restaurant'>--- Restaurant</option>
+                                <option value='ShoppingMall'>--- ShoppingMall</option>
+                                <option value='Skyscraper'>--- Skyscraper</option>
+                                <option value='Venue'>--- Venue</option>
+                                <option value='Cinema'>---- Cinema</option>
+                                <option value='Stadium'>---- Stadium</option>
+                                <option value='Theatre'>---- Theatre</option>
+                                <option value='Infrastructure'>-- Infrastructure</option>
+                                <option value='Airport'>--- Airport</option>
+                                <option value='Dam'>--- Dam</option>
+                                <option value='Dike'>--- Dike</option>
+                                <option value='LaunchPad'>--- LaunchPad</option>
+                                <option value='Lock'>--- Lock</option>
+                                <option value='Port'>--- Port</option>
+                                <option value='PowerStation'>--- PowerStation</option>
+                                <option value='NuclearPowerStation'>---- NuclearPowerStation</option>
+                                <option value='RestArea'>--- RestArea</option>
+                                <option value='RouteOfTransportation'>--- RouteOfTransportation</option>
+                                <option value='Bridge'>---- Bridge</option>
+                                <option value='RailwayLine'>---- RailwayLine</option>
+                                <option value='RailwayTunnel'>---- RailwayTunnel</option>
+                                <option value='Road'>---- Road</option>
+                                <option value='RoadJunction'>---- RoadJunction</option>
+                                <option value='RoadTunnel'>---- RoadTunnel</option>
+                                <option value='WaterwayTunnel'>---- WaterwayTunnel</option>
+                                <option value='Station'>--- Station</option>
+                                <option value='MetroStation'>---- MetroStation</option>
+                                <option value='RailwayStation'>---- RailwayStation</option>
+                                <option value='RouteStop'>---- RouteStop</option>
+                                <option value='TramStation'>---- TramStation</option>
+                                <option value='MilitaryStructure'>-- MilitaryStructure</option>
+                                <option value='Fort'>--- Fort</option>
+                                <option value='Mill'>-- Mill</option>
+                                <option value='Treadmill'>--- Treadmill</option>
+                                <option value='Watermill'>--- Watermill</option>
+                                <option value='WindMotor'>--- WindMotor</option>
+                                <option value='Windmill'>--- Windmill</option>
+                                <option value='Monument'>-- Monument</option>
+                                <option value='GraveMonument'>--- GraveMonument</option>
+                                <option value='Memorial'>--- Memorial</option>
+                                <option value='Pyramid'>-- Pyramid</option>
+                                <option value='SportFacility'>-- SportFacility</option>
+                                <option value='CricketGround'>--- CricketGround</option>
+                                <option value='GolfCourse'>--- GolfCourse</option>
+                                <option value='RaceTrack'>--- RaceTrack</option>
+                                <option value='Racecourse'>---- Racecourse</option>
+                                <option value='SkiArea'>--- SkiArea</option>
+                                <option value='SkiResort'>---- SkiResort</option>
+                                <option value='Square'>-- Square</option>
+                                <option value='Tower'>-- Tower</option>
+                                <option value='Lighthouse'>--- Lighthouse</option>
+                                <option value='WaterTower'>--- WaterTower</option>
+                                <option value='Tunnel'>-- Tunnel</option>
+                                <option value='Zoo'>-- Zoo</option>
+                                <option value='CelestialBody'>- CelestialBody</option>
+                                <option value='Asteroid'>-- Asteroid</option>
+                                <option value='Constellation'>-- Constellation</option>
+                                <option value='Galaxy'>-- Galaxy</option>
+                                <option value='Planet'>-- Planet</option>
+                                <option value='Satellite'>-- Satellite</option>
+                                <option value='ArtificialSatellite'>--- ArtificialSatellite</option>
+                                <option value='Star'>-- Star</option>
+                                <option value='BrownDwarf'>--- BrownDwarf</option>
+                                <option value='Swarm'>-- Swarm</option>
+                                <option value='Globularswarm'>--- Globularswarm</option>
+                                <option value='Openswarm'>--- Openswarm</option>
+                                <option value='Cemetery'>- Cemetery</option>
+                                <option value='ConcentrationCamp'>- ConcentrationCamp</option>
+                                <option value='CountrySeat'>- CountrySeat</option>
+                                <option value='Garden'>- Garden</option>
+                                <option value='HistoricPlace'>- HistoricPlace</option>
+                                <option value='Mine'>- Mine</option>
+                                <option value='CoalPit'>-- CoalPit</option>
+                                <option value='NaturalPlace'>- NaturalPlace</option>
+                                <option value='Archipelago'>-- Archipelago</option>
+                                <option value='Beach'>-- Beach</option>
+                                <option value='BodyOfWater'>-- BodyOfWater</option>
+                                <option value='Bay'>--- Bay</option>
+                                <option value='Lake'>--- Lake</option>
+                                <option value='Ocean'>--- Ocean</option>
+                                <option value='Sea'>--- Sea</option>
+                                <option value='Stream'>--- Stream</option>
+                                <option value='Canal'>---- Canal</option>
+                                <option value='River'>---- River</option>
+                                <option value='Cape'>-- Cape</option>
+                                <option value='Cave'>-- Cave</option>
+                                <option value='Crater'>-- Crater</option>
+                                <option value='LunarCrater'>--- LunarCrater</option>
+                                <option value='Desert'>-- Desert</option>
+                                <option value='Forest'>-- Forest</option>
+                                <option value='Glacier'>-- Glacier</option>
+                                <option value='HotSpring'>-- HotSpring</option>
+                                <option value='Mountain'>-- Mountain</option>
+                                <option value='MountainPass'>-- MountainPass</option>
+                                <option value='MountainRange'>-- MountainRange</option>
+                                <option value='Valley'>-- Valley</option>
+                                <option value='Volcano'>-- Volcano</option>
+                                <option value='Park'>- Park</option>
+                                <option value='PopulatedPlace'>- PopulatedPlace</option>
+                                <option value='Agglomeration'>-- Agglomeration</option>
+                                <option value='Community'>-- Community</option>
+                                <option value='Continent'>-- Continent</option>
+                                <option value='Country'>-- Country</option>
+                                <option value='HistoricalCountry'>--- HistoricalCountry</option>
+                                <option value='GatedCommunity'>-- GatedCommunity</option>
+                                <option value='Intercommunality'>-- Intercommunality</option>
+                                <option value='Island'>-- Island</option>
+                                <option value='Atoll'>--- Atoll</option>
+                                <option value='Locality'>-- Locality</option>
+                                <option value='Region'>-- Region</option>
+                                <option value='AdministrativeRegion'>--- AdministrativeRegion</option>
+                                <option value='ClericalAdministrativeRegion'>---- ClericalAdministrativeRegion</option>
+                                <option value='Deanery'>----- Deanery</option>
+                                <option value='Diocese'>----- Diocese</option>
+                                <option value='Parish'>----- Parish</option>
+                                <option value='GovernmentalAdministrativeRegion'>---- GovernmentalAdministrativeRegion</option>
+                                <option value='Arrondissement'>----- Arrondissement</option>
+                                <option value='Canton'>----- Canton</option>
+                                <option value='Department'>----- Department</option>
+                                <option value='OverseasDepartment'>------ OverseasDepartment</option>
+                                <option value='District'>----- District</option>
+                                <option value='HistoricalDistrict'>------ HistoricalDistrict</option>
+                                <option value='DistrictWaterBoard'>----- DistrictWaterBoard</option>
+                                <option value='MicroRegion'>----- MicroRegion</option>
+                                <option value='Municipality'>----- Municipality</option>
+                                <option value='FormerMunicipality'>------ FormerMunicipality</option>
+                                <option value='Prefecture'>----- Prefecture</option>
+                                <option value='Province'>----- Province</option>
+                                <option value='HistoricalProvince'>------ HistoricalProvince</option>
+                                <option value='Regency'>----- Regency</option>
+                                <option value='SubMunicipality'>----- SubMunicipality</option>
+                                <option value='HistoricalAreaOfAuthority'>---- HistoricalAreaOfAuthority</option>
+                                <option value='HistoricalRegion'>--- HistoricalRegion</option>
+                                <option value='NaturalRegion'>--- NaturalRegion</option>
+                                <option value='Settlement'>-- Settlement</option>
+                                <option value='City'>--- City</option>
+                                <option value='Capital'>---- Capital</option>
+                                <option value='CapitalOfRegion'>---- CapitalOfRegion</option>
+                                <option value='CityDistrict'>--- CityDistrict</option>
+                                <option value='HistoricalSettlement'>--- HistoricalSettlement</option>
+                                <option value='Town'>--- Town</option>
+                                <option value='Village'>--- Village</option>
+                                <option value='State'>-- State</option>
+                                <option value='Street'>-- Street</option>
+                                <option value='Territory'>-- Territory</option>
+                                <option value='OldTerritory'>--- OldTerritory</option>
+                                <option value='ProtectedArea'>- ProtectedArea</option>
+                                <option value='SiteOfSpecialScientificInterest'>- SiteOfSpecialScientificInterest</option>
+                                <option value='WineRegion'>- WineRegion</option>
+                                <option value='WorldHeritageSite'>- WorldHeritageSite</option>
+                                <option value='Population'> Population</option>
+                                <option value='PublicService'> PublicService</option>
+                                <option value='Relationship'> Relationship</option>
+                                <option value='Species'> Species</option>
+                                <option value='Archaea'>- Archaea</option>
+                                <option value='Bacteria'>- Bacteria</option>
+                                <option value='Eukaryote'>- Eukaryote</option>
+                                <option value='Animal'>-- Animal</option>
+                                <option value='Amphibian'>--- Amphibian</option>
+                                <option value='Arachnid'>--- Arachnid</option>
+                                <option value='Bird'>--- Bird</option>
+                                <option value='Crustacean'>--- Crustacean</option>
+                                <option value='Fish'>--- Fish</option>
+                                <option value='Insect'>--- Insect</option>
+                                <option value='Mammal'>--- Mammal</option>
+                                <option value='Cat'>---- Cat</option>
+                                <option value='Dog'>---- Dog</option>
+                                <option value='Horse'>---- Horse</option>
+                                <option value='Mollusca'>--- Mollusca</option>
+                                <option value='Reptile'>--- Reptile</option>
+                                <option value='Fungus'>-- Fungus</option>
+                                <option value='Plant'>-- Plant</option>
+                                <option value='ClubMoss'>--- ClubMoss</option>
+                                <option value='Conifer'>--- Conifer</option>
+                                <option value='CultivatedVariety'>--- CultivatedVariety</option>
+                                <option value='Cycad'>--- Cycad</option>
+                                <option value='Fern'>--- Fern</option>
+                                <option value='FloweringPlant'>--- FloweringPlant</option>
+                                <option value='Grape'>---- Grape</option>
+                                <option value='Ginkgo'>--- Ginkgo</option>
+                                <option value='Gnetophytes'>--- Gnetophytes</option>
+                                <option value='GreenAlga'>--- GreenAlga</option>
+                                <option value='Moss'>--- Moss</option>
+                                <option value='SportCompetitionResult'> SportCompetitionResult</option>
+                                <option value='OlympicResult'>- OlympicResult</option>
+                                <option value='SnookerWorldRanking'>- SnookerWorldRanking</option>
+                                <option value='SportsSeason'> SportsSeason</option>
+                                <option value='MotorsportSeason'>- MotorsportSeason</option>
+                                <option value='SportsTeamSeason'>- SportsTeamSeason</option>
+                                <option value='BaseballSeason'>-- BaseballSeason</option>
+                                <option value='FootballLeagueSeason'>-- FootballLeagueSeason</option>
+                                <option value='NationalFootballLeagueSeason'>--- NationalFootballLeagueSeason</option>
+                                <option value='NCAATeamSeason'>-- NCAATeamSeason</option>
+                                <option value='SoccerClubSeason'>-- SoccerClubSeason</option>
+                                <option value='SoccerLeagueSeason'>-- SoccerLeagueSeason</option>
+                                <option value='Statistic'> Statistic</option>
+                                <option value='TimePeriod'> TimePeriod</option>
+                                <option value='CareerStation'>- CareerStation</option>
+                                <option value='MilitaryService'>-- MilitaryService</option>
+                                <option value='GeologicalPeriod'>- GeologicalPeriod</option>
+                                <option value='HistoricalPeriod'>- HistoricalPeriod</option>
+                                <option value='PeriodOfArtisticStyle'>- PeriodOfArtisticStyle</option>
+                                <option value='PrehistoricalPeriod'>- PrehistoricalPeriod</option>
+                                <option value='ProtohistoricalPeriod'>- ProtohistoricalPeriod</option>
+                                <option value='Reign'>- Reign</option>
+                                <option value='Tenure'>- Tenure</option>
+                                <option value='Year'>- Year</option>
+                                <option value='YearInSpaceflight'>- YearInSpaceflight</option>
+                                <option value='TopicalConcept'> TopicalConcept</option>
+                                <option value='AcademicSubject'>- AcademicSubject</option>
+                                <option value='CardinalDirection'>- CardinalDirection</option>
+                                <option value='Fashion'>- Fashion</option>
+                                <option value='Genre'>- Genre</option>
+                                <option value='ArtisticGenre'>-- ArtisticGenre</option>
+                                <option value='LiteraryGenre'>-- LiteraryGenre</option>
+                                <option value='MovieGenre'>-- MovieGenre</option>
+                                <option value='MusicGenre'>-- MusicGenre</option>
+                                <option value='Ideology'>- Ideology</option>
+                                <option value='MathematicalConcept'>- MathematicalConcept</option>
+                                <option value='PhilosophicalConcept'>- PhilosophicalConcept</option>
+                                <option value='PoliticalConcept'>- PoliticalConcept</option>
+                                <option value='ScientificConcept'>- ScientificConcept</option>
+                                <option value='Standard'>- Standard</option>
+                                <option value='SystemOfLaw'>- SystemOfLaw</option>
+                                <option value='Tax'>- Tax</option>
+                                <option value='Taxon'>- Taxon</option>
+                                <option value='TheologicalConcept'>- TheologicalConcept</option>
+                                <option value='ChristianDoctrine'>-- ChristianDoctrine</option>
+                                <option value='Type'>- Type</option>
+                                <option value='DocumentType'>-- DocumentType</option>
+                                <option value='GovernmentType'>-- GovernmentType</option>
+                                <option value='UnitOfWork'> UnitOfWork</option>
+                                <option value='Case'>- Case</option>
+                                <option value='LegalCase'>-- LegalCase</option>
+                                <option value='SupremeCourtOfTheUnitedStatesCase'>--- SupremeCourtOfTheUnitedStatesCase</option>
+                                <option value='Project'>- Project</option>
+                                <option value='ResearchProject'>-- ResearchProject</option>
+                                <option value='Unknown'> Unknown</option>
+                                <option value='WikimediaTemplate'>- WikimediaTemplate</option>
+                                <option value='Work'> Work</option>
+                                <option value='Artwork'>- Artwork</option>
+                                <option value='Painting'>-- Painting</option>
+                                <option value='Sculpture'>-- Sculpture</option>
+                                <option value='Cartoon'>- Cartoon</option>
+                                <option value='Anime'>-- Anime</option>
+                                <option value='HollywoodCartoon'>-- HollywoodCartoon</option>
+                                <option value='CollectionOfValuables'>- CollectionOfValuables</option>
+                                <option value='Archive'>-- Archive</option>
+                                <option value='Database'>- Database</option>
+                                <option value='BiologicalDatabase'>-- BiologicalDatabase</option>
+                                <option value='Document'>- Document</option>
+                                <option value='File'>-- File</option>
+                                <option value='Image'>-- Image</option>
+                                <option value='MovingImage'>--- MovingImage</option>
+                                <option value='StillImage'>--- StillImage</option>
+                                <option value='Sound'>-- Sound</option>
+                                <option value='Film'>- Film</option>
+                                <option value='LineOfFashion'>- LineOfFashion</option>
+                                <option value='MusicalWork'>- MusicalWork</option>
+                                <option value='Album'>-- Album</option>
+                                <option value='ArtistDiscography'>-- ArtistDiscography</option>
+                                <option value='ClassicalMusicComposition'>-- ClassicalMusicComposition</option>
+                                <option value='Musical'>-- Musical</option>
+                                <option value='NationalAnthem'>-- NationalAnthem</option>
+                                <option value='Opera'>-- Opera</option>
+                                <option value='Single'>-- Single</option>
+                                <option value='Song'>-- Song</option>
+                                <option value='EurovisionSongContestEntry'>--- EurovisionSongContestEntry</option>
+                                <option value='RadioProgram'>- RadioProgram</option>
+                                <option value='Software'>- Software</option>
+                                <option value='VideoGame'>-- VideoGame</option>
+                                <option value='TelevisionEpisode'>- TelevisionEpisode</option>
+                                <option value='TelevisionSeason'>- TelevisionSeason</option>
+                                <option value='TelevisionShow'>- TelevisionShow</option>
+                                <option value='Website'>- Website</option>
+                                <option value='WrittenWork'>- WrittenWork</option>
+                                <option value='Annotation'>-- Annotation</option>
+                                <option value='Reference'>--- Reference</option>
+                                <option value='Article'>-- Article</option>
+                                <option value='Book'>-- Book</option>
+                                <option value='Novel'>--- Novel</option>
+                                <option value='LightNovel'>---- LightNovel</option>
+                                <option value='Comic'>-- Comic</option>
+                                <option value='ComicStrip'>--- ComicStrip</option>
+                                <option value='Manga'>--- Manga</option>
+                                <option value='Manhua'>--- Manhua</option>
+                                <option value='Manhwa'>--- Manhwa</option>
+                                <option value='Drama'>-- Drama</option>
+                                <option value='Law'>-- Law</option>
+                                <option value='Letter'>-- Letter</option>
+                                <option value='MultiVolumePublication'>-- MultiVolumePublication</option>
+                                <option value='PeriodicalLiterature'>-- PeriodicalLiterature</option>
+                                <option value='AcademicJournal'>--- AcademicJournal</option>
+                                <option value='Magazine'>--- Magazine</option>
+                                <option value='Newspaper'>--- Newspaper</option>
+                                <option value='UndergroundJournal'>--- UndergroundJournal</option>
+                                <option value='Play'>-- Play</option>
+                                <option value='Poem'>-- Poem</option>
+                                <option value='Quote'>-- Quote</option>
+                                <option value='Resume'>-- Resume</option>
+                                <option value='StatedResolution'>-- StatedResolution</option>
+                                <option value='Treaty'>-- Treaty</option>
+                            </select>
+                        </div>
+
+                        <!-- User knowledge -->
+                        <p><strong>How do you consider yourself?</strong></p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="nlp" id="feed-exp-nlp" name="feed-exp">
+                            <label class="form-check-label" for="feed-exp-nlp">
+                                I know about NLP
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="sw" id="feed-exp-sw" name="feed-exp">
+                            <label class="form-check-label" for="feed-exp-sw">
+                                I know about Semantic Web and Linked data
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="data" id="feed-exp-data" name="feed-exp">
+                            <label class="form-check-label" for="feed-exp-data">
+                                I know about Datasets
+                            </label>
+                        </div>
+
+
+                        <br>
+                        
+                        <!-- Text source -->
+                        <p><strong>Where did you get your text from?</strong></p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="feed-source-radios" id="feed-source-radio-wrote"
+                                   value="text-wrote">
+                            <label class="form-check-label" for="feed-source-radio-wrote">
+                                I wrote it myself
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="feed-source-radios" id="feed-source-radio-db-wp"
+                                   value="text-db-wp">
+                            <label class="form-check-label" for="feed-source-radio-db-wp">
+                                From Wikipedia or DBpedia
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="feed-source-radios" id="feed-source-radio-internet"
+                                   value="text-internet">
+                            <label class="form-check-label" for="feed-source-radio-internet">
+                                From the internet
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="feed-source-radios" id="feed-source-radio-none"
+                                   value="text-none" checked>
+                            <label class="form-check-label" for="feed-source-radio-none">
+                                None of the above
+                            </label>
+                        </div>
+                        <input type="hidden" id="feed-resp" name="feed-resp" value="notdefined">
+
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="feed-submit-btn">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"
+        integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
+        crossorigin="anonymous"></script>
+<script src="static/js/lib.js"></script>
+
+
+<script>
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+      (function() {
+        'use strict';
+
+        window.addEventListener('load', function() {
+          // Fetch all the forms we want to apply custom Bootstrap validation styles to
+          var forms = document.getElementsByClassName('needs-validation');
+
+          // Loop over them and prevent submission
+          var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+              if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            }, false);
+          });
+        }, false);
+      })();
+
+
+</script>
+<script>
+      $(document).ready(function(){
+          $('[data-toggle="tooltip"]').tooltip();
+      });
+
+
+</script>
+</body>
+</html>

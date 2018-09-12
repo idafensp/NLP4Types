@@ -26,3 +26,7 @@ def cross_validation(classifier, train_data, train_labels, folds=5):
 def cross_validation_linear_svc(train_data, train_labels, folds=5):
     classifier = LinearSVC()
     return cross_val_predict(classifier, train_data, train_labels, cv=folds, verbose=2)
+
+
+# TODO https://towardsdatascience.com/multi-label-text-classification-with-scikit-learn-30714b7819c5
+# multilabel, returting several types and their scores (when possible)
