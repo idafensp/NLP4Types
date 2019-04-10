@@ -1,0 +1,17 @@
+#!/bin/sh
+# script para lanzar tomcat
+case "$1" in
+'start')
+	/home/isantana/nlp4types/python/NLP4Types/flask/run_flask.sh
+	;;
+'stop')
+	/home/isantana/nlp4types/python/NLP4Types/flask/run_flask.s
+	;;
+'restart')
+	/home/isantana/nlp4types/python/NLP4Types/flask/run_flask.s
+	;;
+*)	
+	echo "Usage: $0 { start | stop }"
+	;;
+esac
+exit 0
